@@ -1,11 +1,15 @@
 import axios from 'axios'
 import { useContext, useEffect } from 'react'
+import { AuthContext } from '../context/authContext'
 import { TodoContext } from '../context/todoContext'
+import useLogout from '../hooks/useLogout'
 import Todo from './Todo'
 import TodoForm from './TodoForm'
 
 const Home = () => {
     const { todos, dispatch } = useContext(TodoContext)
+    const { user } = useContext(AuthContext)
+    const { logout } = useLogout()
 
     useEffect(() => {
         const fetch_todo = async () => {
@@ -14,11 +18,13 @@ const Home = () => {
             dispatch({ type: 'ALL_TODO', payload: response.data })
         }
 
-        fetch_todo()
-    }, [dispatch])
+        if (user) {
+            fetch_todo()
+        }
+    }, [dispatch, user])
 
     return (
-        <section className='main__section'>
+        <section className='main__section position-relative z-0'>
             <div className='container'>
                 <div className='row'>
                     {/* left */}
@@ -36,6 +42,9 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <button onClick={logout} className='btn btn-info fw-bold logout'>
+                Log Out
+            </button>
         </section>
     )
 }
